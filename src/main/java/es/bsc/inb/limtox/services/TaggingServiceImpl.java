@@ -8,20 +8,21 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.zip.GZIPInputStream;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -61,6 +62,8 @@ public class TaggingServiceImpl implements TaggingService{
 			Integer index_id = new Integer(propertiesParameters.getProperty("index_id"));
 			Integer index_text_to_tag = new Integer(propertiesParameters.getProperty("index_text_to_tag"));
 			
+			//curateDict(hepatotoxicityJSONDict, hepatotoxicityJSONDict + "_new.json");
+			
 			File inputDirectory = new File(inputDirectoryPath);
 		    if(!inputDirectory.exists()) {
 		    	return ;
@@ -90,6 +93,11 @@ public class TaggingServiceImpl implements TaggingService{
 					String fileName = file_to_classify.getName();
 					String outputFilePath = outputDirectory + File.separator + fileName;
 					BufferedWriter outPutFile = new BufferedWriter(new FileWriter(outputFilePath));
+					
+					outPutFile.write("id\tstartOffset\tendOffset\ttext\tentityType\tetox_mapping_id\tmesh_omim_mapping_id\tmouse_pathology_mapping_id\t"
+							+ "medra_mapping_id\tgemina_sympton_mapping_id\tdisease_ontology_mapping_id\tadverse_events_mapping_id\thuman_phenotype_mapping_id\tefpia_mapping_id\t" + 
+				        	"mpheno_mapping_id\tcostart_concept\n");
+					outPutFile.flush();
 					for (String line : ObjectBank.getLineIterator(file_to_classify.getAbsolutePath(), "utf-8")) {
 						try {
 							String[] data = line.split("\t");
@@ -113,6 +121,46 @@ public class TaggingServiceImpl implements TaggingService{
 	}
 
 
+	/**
+	 * Curate the hepatotoxicity Limtox Dictionary, run only one time to remove the duplicates original_entry now every thing is lowew case.
+	 * @param inputPath
+	 * @param outputPath
+	 */
+	private void curateDict(String inputPath, String outputPath) {
+		List<HepatotoxicityTerm> hepatotoxicityTerms = this.findAll(inputPath);
+		Map<String, HepatotoxicityTerm> hepatotoxicityTermsCurated = new HashMap<String, HepatotoxicityTerm>();
+		for (HepatotoxicityTerm hepatotoxicityTerm : hepatotoxicityTerms) {
+			if(hepatotoxicityTermsCurated.get(hepatotoxicityTerm.getOriginal_entry().toLowerCase())!=null) {
+				taggingLog.warn("The key alreay exist : " + hepatotoxicityTerm.getOriginal_entry());
+			}else {
+				hepatotoxicityTermsCurated.put(hepatotoxicityTerm.getOriginal_entry().toLowerCase(), hepatotoxicityTerm);
+			}
+		}
+		taggingLog.warn("Original Dict size : " + hepatotoxicityTerms.size() + ", curated Dict size : " + hepatotoxicityTermsCurated.size());
+		generateJSONFile(hepatotoxicityTermsCurated.values(), outputPath);
+		
+	}
+
+	@SuppressWarnings("unused")
+	private void generateJSONFile(Collection<HepatotoxicityTerm> hepatotoxicityTerms, String outputPath)  {
+			ObjectMapper objectMapper = new ObjectMapper();
+			objectMapper.setSerializationInclusion(Include.NON_NULL);
+			objectMapper.setSerializationInclusion(Include.NON_EMPTY);
+			try {
+				objectMapper.writeValue(new File(outputPath), hepatotoxicityTerms);
+			} catch (JsonGenerationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					
+				} catch (JsonMappingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 
 	private Map<String, HepatotoxicityTerm> generateRulesForTagging(String inputPath,String outputPath) throws IOException {
 		List<HepatotoxicityTerm> hepatotoxicityTerms = this.findAll(inputPath);
