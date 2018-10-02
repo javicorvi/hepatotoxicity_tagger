@@ -271,7 +271,7 @@ public class TaggingServiceImpl implements TaggingService{
 			        	CoreLabel token = entityMention.get(TokensAnnotation.class).get(0);
 			        	HepatotoxicityTerm hepatotoxicityTerm = hepatotoxicityTermsDict.get(keyword);
 			        	if(hepatotoxicityTerm!=null) {
-			        		output.write(id + "\t"+ token.beginPosition() + "\t" + (token.beginPosition() + keyword.length())  + "\t" + keyword + "\t" + entityType + "\t" + 
+			        		output.write(id + "\t"+ token.beginPosition() + "\t" + (token.beginPosition() + keyword.length())  + "\t" + keyword + "\t" + entityType.toLowerCase() + "\t" + 
 						        	hepatotoxicityTerm.getEtox_mapping_id() + "\t" + hepatotoxicityTerm.getMesh_omim_mapping_id() + "\t" + hepatotoxicityTerm.getMouse_pathology_mapping_id() + "\t" + 
 						        	hepatotoxicityTerm.getMedDRA_mapping_id() + "\t" + hepatotoxicityTerm.getGemina_sympton_mapping_id() + "\t" + hepatotoxicityTerm.getDisease_ontology_mapping_id() + "\t" + 
 						        	hepatotoxicityTerm.getAdverse_events_mapping_id() + "\t" + hepatotoxicityTerm.getHuman_phenotype_mapping_id() + "\t" + hepatotoxicityTerm.getEFPIA_mapping_id() + "\t" + 
