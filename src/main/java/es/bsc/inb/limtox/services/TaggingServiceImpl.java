@@ -253,8 +253,8 @@ public class TaggingServiceImpl implements TaggingService{
 //			      "After eating some escargot for the first time, Joe said, \"That was delicious!\" " +
 //			      "He sent xenobiotic liver toxicity a postcard to his sister Jane Smith. " +
 //			      "After hearing about Joe's fipexide trip, Jane decided she might go to France one day.";
-		Annotation document = new Annotation(text_to_tag);
-		//Annotation document = new Annotation(text_to_tag.toLowerCase());
+		//Annotation document = new Annotation(text_to_tag);
+		Annotation document = new Annotation(text_to_tag.toLowerCase());
 		// run all Annotators on this text
 		pipeline.annotate(document);
         List<CoreMap> sentences = document.get(SentencesAnnotation.class);
