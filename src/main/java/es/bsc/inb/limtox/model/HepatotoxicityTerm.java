@@ -40,7 +40,7 @@ public class HepatotoxicityTerm {
 	private String COSTART_concept;
 	
 	public void toLowerCase() {
-		if(original_entry!=null && !original_entry.equals(original_entry.toLowerCase())) {
+		if(original_entry!=null) {
 			original_entry=original_entry.toLowerCase();
 		}
 	}

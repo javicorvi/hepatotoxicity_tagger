@@ -130,10 +130,11 @@ public class TaggingServiceImpl implements TaggingService{
 		List<HepatotoxicityTerm> hepatotoxicityTerms = this.findAll(inputPath);
 		Map<String, HepatotoxicityTerm> hepatotoxicityTermsCurated = new HashMap<String, HepatotoxicityTerm>();
 		for (HepatotoxicityTerm hepatotoxicityTerm : hepatotoxicityTerms) {
-			if(hepatotoxicityTermsCurated.get(hepatotoxicityTerm.getOriginal_entry().toLowerCase())!=null) {
+			hepatotoxicityTerm.toLowerCase();
+			if(hepatotoxicityTermsCurated.get(hepatotoxicityTerm.getOriginal_entry())!=null) {
 				taggingLog.warn("The key alreay exist : " + hepatotoxicityTerm.getOriginal_entry());
 			}else {
-				hepatotoxicityTermsCurated.put(hepatotoxicityTerm.getOriginal_entry().toLowerCase(), hepatotoxicityTerm);
+				hepatotoxicityTermsCurated.put(hepatotoxicityTerm.getOriginal_entry(), hepatotoxicityTerm);
 			}
 		}
 		taggingLog.warn("Original Dict size : " + hepatotoxicityTerms.size() + ", curated Dict size : " + hepatotoxicityTermsCurated.size());
