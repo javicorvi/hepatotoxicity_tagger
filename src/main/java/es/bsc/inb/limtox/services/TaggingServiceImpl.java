@@ -107,7 +107,6 @@ public class TaggingServiceImpl implements TaggingService{
 						}  catch (Exception e) {
 							taggingLog.error("Error tagging the document line " + line + " belongs to the file: " +  fileName,e);
 						} 
-					
 					}
 					outPutFile.close();
 					filesPrecessedWriter.write(file_to_classify.getName()+"\n");
